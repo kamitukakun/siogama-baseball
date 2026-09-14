@@ -4,8 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="./support.js"></script>
+<style>
+html,body{background:#0B2233}
+#dc-preloader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#0B2233;transition:opacity .6s ease,visibility .6s ease}
+#dc-preloader.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.dc-preloader-inner{display:flex;flex-direction:column;align-items:center;gap:16px;font-family:system-ui,sans-serif}
+.dc-preloader-mark{position:relative;width:56px;height:56px;display:grid;place-items:center}
+.dc-preloader-ring{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(247,245,241,.25);border-top-color:#E2703A;animation:dc-spin 1s linear infinite}
+.dc-preloader-logo{position:relative;color:#F7F5F1;font-weight:800;font-size:13px;letter-spacing:.04em}
+.dc-preloader-label{color:rgba(247,245,241,.55);font-size:10.5px;font-weight:600;letter-spacing:.28em}
+@keyframes dc-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.dc-preloader-ring{animation:none}}
+</style>
 </head>
 <body>
+<div id="dc-preloader">
+  <div class="dc-preloader-inner">
+    <div class="dc-preloader-mark"><span class="dc-preloader-ring"></span><span class="dc-preloader-logo">○○</span></div>
+    <p class="dc-preloader-label">LOADING…</p>
+  </div>
+</div>
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -24,6 +42,43 @@ ul,ol{list-style:none}
 img{display:block;max-width:100%}
 @keyframes cue{0%{transform:translateY(0);opacity:.15}45%{opacity:1}100%{transform:translateY(22px);opacity:0}}
 @keyframes tide{0%{transform:translateX(-2%)}50%{transform:translateX(2%)}100%{transform:translateX(-2%)}}
+@keyframes heroUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+@keyframes menuFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes menuSlideIn{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:translateX(0)}}
+
+.hero-in{opacity:0;transform:translateY(26px);animation:heroUp .9s cubic-bezier(.22,.61,.36,1) forwards}
+
+.nav-desktop{display:flex;align-items:center;gap:clamp(10px,1.5vw,22px);flex-wrap:wrap;justify-content:flex-end}
+.nav-link{position:relative;padding-bottom:3px}
+.nav-link::after{content:'';position:absolute;left:0;right:100%;bottom:0;height:1px;background:#E2703A;transition:right .3s cubic-bezier(.22,.61,.36,1)}
+.nav-link:hover::after{right:0}
+
+.hamburger-btn{display:none;position:relative;z-index:80;width:34px;height:34px;padding:0;border:0;background:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:6px;flex-shrink:0}
+.hamburger-bar{display:block;width:22px;height:2px;background:#F7F5F1;border-radius:2px;transition:transform .3s cubic-bezier(.22,.61,.36,1),opacity .2s ease}
+.hamburger-btn.is-open .hamburger-bar:nth-child(1){transform:translateY(8px) rotate(45deg)}
+.hamburger-btn.is-open .hamburger-bar:nth-child(2){opacity:0}
+.hamburger-btn.is-open .hamburger-bar:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
+
+.mobile-menu-overlay{position:fixed;inset:0;z-index:65;background:rgba(7,21,31,.62);backdrop-filter:blur(2px);animation:menuFadeIn .25s ease}
+.mobile-menu{position:absolute;top:0;right:0;bottom:0;width:min(78vw,320px);background:#0B2233;padding:clamp(88px,14vh,110px) 26px 32px;display:flex;flex-direction:column;gap:2px;box-shadow:-18px 0 44px rgba(4,16,25,.4);animation:menuSlideIn .35s cubic-bezier(.22,.61,.36,1)}
+.mobile-menu-link{display:block;padding:14px 4px;font-size:16px;font-weight:600;color:#F7F5F1;border-bottom:1px solid rgba(247,245,241,.12);opacity:0;animation:heroUp .5s cubic-bezier(.22,.61,.36,1) forwards}
+.mobile-menu-cta{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:20px;padding:15px;border-radius:999px;background:#E2703A;color:#fff;font-size:15px;font-weight:700;opacity:0;animation:heroUp .5s cubic-bezier(.22,.61,.36,1) forwards}
+
+@media (max-width:880px){
+  .nav-desktop{display:none}
+  .hamburger-btn{display:flex}
+}
+
+.gallery-tile{transition:transform .5s cubic-bezier(.22,.61,.36,1)}
+.gallery-tile:hover{transform:scale(1.045)}
+
+.cta-btn{transition:transform .25s cubic-bezier(.22,.61,.36,1),box-shadow .25s ease,background .25s ease}
+.cta-btn:hover{transform:translateY(-2px)}
+
+@media (prefers-reduced-motion: reduce){
+  .hero-in,.mobile-menu-link,.mobile-menu-cta,.mobile-menu,.mobile-menu-overlay{animation:none!important;opacity:1!important;transform:none!important}
+  .hamburger-bar,.nav-link::after,.gallery-tile,.cta-btn{transition:none!important}
+}
 </style>
 </helmet>
 
@@ -37,15 +92,33 @@ img{display:block;max-width:100%}
       <span style="font-family:'Archivo',sans-serif;font-size:9px;font-weight:600;letter-spacing:.2em;opacity:.7">SHIOGAMA BASEBALL</span>
     </span>
   </a>
-  <nav style="display:flex;align-items:center;gap:clamp(10px,1.5vw,22px);flex-wrap:wrap;justify-content:flex-end">
-    <a href="#about" style="font-size:12.5px;font-weight:500;letter-spacing:.06em;color:rgba(247,245,241,.88)">チーム紹介</a>
-    <a href="#shiogama" style="font-size:12.5px;font-weight:500;letter-spacing:.06em;color:rgba(247,245,241,.88)">塩竈と野球</a>
-    <a href="#schedule" style="font-size:12.5px;font-weight:500;letter-spacing:.06em;color:rgba(247,245,241,.88)">活動予定</a>
-    <a href="#gallery" style="font-size:12.5px;font-weight:500;letter-spacing:.06em;color:rgba(247,245,241,.88)">ギャラリー</a>
-    <a href="#faq" style="font-size:12.5px;font-weight:500;letter-spacing:.06em;color:rgba(247,245,241,.88)">よくある質問</a>
-    <a href="#recruit" style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;background:#E2703A;color:#fff;font-size:12.5px;font-weight:700;letter-spacing:.04em;box-shadow:0 6px 18px rgba(226,112,58,.3)" style-hover="background:#C85E2C">見学・体験の相談<span style="font-family:'Archivo',sans-serif">→</span></a>
+  <nav class="nav-desktop">
+    <a href="#about" class="nav-link" style="font-size:12.5px;font-weight:500;letter-spacing:.06em;color:rgba(247,245,241,.88)">チーム紹介</a>
+    <a href="#shiogama" class="nav-link" style="font-size:12.5px;font-weight:500;letter-spacing:.06em;color:rgba(247,245,241,.88)">塩竈と野球</a>
+    <a href="#schedule" class="nav-link" style="font-size:12.5px;font-weight:500;letter-spacing:.06em;color:rgba(247,245,241,.88)">活動予定</a>
+    <a href="#gallery" class="nav-link" style="font-size:12.5px;font-weight:500;letter-spacing:.06em;color:rgba(247,245,241,.88)">ギャラリー</a>
+    <a href="#faq" class="nav-link" style="font-size:12.5px;font-weight:500;letter-spacing:.06em;color:rgba(247,245,241,.88)">よくある質問</a>
+    <a href="#recruit" class="cta-btn" style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;background:#E2703A;color:#fff;font-size:12.5px;font-weight:700;letter-spacing:.04em;box-shadow:0 6px 18px rgba(226,112,58,.3)" style-hover="background:#C85E2C;box-shadow:0 10px 26px rgba(226,112,58,.42)">見学・体験の相談<span style="font-family:'Archivo',sans-serif">→</span></a>
   </nav>
+  <button type="button" class="{{ menuButtonClass }}" onClick="{{ toggleMenu }}" aria-label="メニュー" aria-expanded="{{ menuOpen }}" aria-controls="mobile-menu">
+    <span class="hamburger-bar"></span>
+    <span class="hamburger-bar"></span>
+    <span class="hamburger-bar"></span>
+  </button>
 </header>
+
+<sc-if value="{{ menuOpen }}">
+  <div class="mobile-menu-overlay" onClick="{{ closeMenu }}">
+    <nav id="mobile-menu" class="mobile-menu" onClick="{{ stopClick }}">
+      <a href="#about" class="mobile-menu-link" onClick="{{ closeMenu }}" style="animation-delay:.03s">チーム紹介</a>
+      <a href="#shiogama" class="mobile-menu-link" onClick="{{ closeMenu }}" style="animation-delay:.08s">塩竈と野球</a>
+      <a href="#schedule" class="mobile-menu-link" onClick="{{ closeMenu }}" style="animation-delay:.13s">活動予定</a>
+      <a href="#gallery" class="mobile-menu-link" onClick="{{ closeMenu }}" style="animation-delay:.18s">ギャラリー</a>
+      <a href="#faq" class="mobile-menu-link" onClick="{{ closeMenu }}" style="animation-delay:.23s">よくある質問</a>
+      <a href="#recruit" class="mobile-menu-cta" onClick="{{ closeMenu }}" style="animation-delay:.28s">見学・体験の相談<span style="font-family:'Archivo',sans-serif">→</span></a>
+    </nav>
+  </div>
+</sc-if>
 
 <section id="hero" data-screen-label="01 HERO" style="position:relative;min-height:min(96vh,880px);display:flex;align-items:flex-end;padding-top:clamp(84px,13vh,130px);background:#0B2233;overflow:hidden">
   <div ref="{{ heroImgRef }}" style="position:absolute;inset:-7% 0 0 0;background-image:url('images/hero-shiogama.png');background-size:cover;background-position:62% 38%;background-color:#0B2233;will-change:transform">
@@ -54,14 +127,14 @@ img{display:block;max-width:100%}
   <div style="position:absolute;left:0;right:0;bottom:clamp(160px,23vh,290px);height:1px;background:linear-gradient(90deg,transparent,rgba(247,245,241,.45),transparent);animation:tide 15s ease-in-out infinite"></div>
 
   <div style="position:relative;z-index:2;width:100%;max-width:1160px;margin:0 auto;padding:0 clamp(20px,5vw,48px) clamp(52px,7vw,88px)">
-    <p style="display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:clamp(18px,3vw,28px);padding:7px 15px;border:1px solid rgba(247,245,241,.34);border-radius:999px;color:#F7F5F1;font-size:11.5px;font-weight:500;letter-spacing:.12em">宮城県塩竈市｜学童野球・少年野球団<span style="width:5px;height:5px;border-radius:50%;background:#E2703A"></span>団員募集中</p>
-    <h1 style="color:#F7F5F1;font-weight:900;font-size:clamp(36px,7.4vw,88px);line-height:1.1;letter-spacing:-.015em;margin-bottom:clamp(16px,2.4vw,26px);text-shadow:0 2px 34px rgba(4,16,25,.45)">海のまち、<br />塩竈で育つ。</h1>
-    <p style="color:rgba(247,245,241,.9);font-size:clamp(14.5px,1.5vw,17.5px);line-height:1.95;max-width:33em;margin-bottom:clamp(26px,3.6vw,40px);font-weight:500">潮風のにおいがするグラウンドで、思いきり声を出して白球を追う。空振りしても、負けた日も、隣で笑ってくれる仲間がいる。○○は、塩竈の子どもたちが野球で大きくなっていく場所です。</p>
-    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
-      <a href="#recruit" style="display:inline-flex;align-items:center;gap:10px;padding:17px 28px;border-radius:999px;background:#E2703A;color:#fff;font-size:15px;font-weight:700;letter-spacing:.03em;box-shadow:0 12px 32px rgba(226,112,58,.34)" style-hover="background:#C85E2C">まずは練習を見に行く<span style="font-family:'Archivo',sans-serif">→</span></a>
-      <a href="#about" style="display:inline-flex;align-items:center;gap:10px;padding:17px 26px;border-radius:999px;border:1px solid rgba(247,245,241,.42);color:#F7F5F1;font-size:15px;font-weight:600" style-hover="background:rgba(247,245,241,.1);color:#F7F5F1">○○ってどんなチーム？</a>
+    <p class="hero-in" style="display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:clamp(18px,3vw,28px);padding:7px 15px;border:1px solid rgba(247,245,241,.34);border-radius:999px;color:#F7F5F1;font-size:11.5px;font-weight:500;letter-spacing:.12em;animation-delay:.05s">宮城県塩竈市｜学童野球・少年野球団<span style="width:5px;height:5px;border-radius:50%;background:#E2703A"></span>団員募集中</p>
+    <h1 class="hero-in" style="color:#F7F5F1;font-weight:900;font-size:clamp(36px,7.4vw,88px);line-height:1.1;letter-spacing:-.015em;margin-bottom:clamp(16px,2.4vw,26px);text-shadow:0 2px 34px rgba(4,16,25,.45);animation-delay:.16s">海のまち、<br />塩竈で育つ。</h1>
+    <p class="hero-in" style="color:rgba(247,245,241,.9);font-size:clamp(14.5px,1.5vw,17.5px);line-height:1.95;max-width:33em;margin-bottom:clamp(26px,3.6vw,40px);font-weight:500;animation-delay:.28s">潮風のにおいがするグラウンドで、思いきり声を出して白球を追う。空振りしても、負けた日も、隣で笑ってくれる仲間がいる。○○は、塩竈の子どもたちが野球で大きくなっていく場所です。</p>
+    <div class="hero-in" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;animation-delay:.38s">
+      <a href="#recruit" class="cta-btn" style="display:inline-flex;align-items:center;gap:10px;padding:17px 28px;border-radius:999px;background:#E2703A;color:#fff;font-size:15px;font-weight:700;letter-spacing:.03em;box-shadow:0 12px 32px rgba(226,112,58,.34)" style-hover="background:#C85E2C;box-shadow:0 16px 40px rgba(226,112,58,.44)">まずは練習を見に行く<span style="font-family:'Archivo',sans-serif">→</span></a>
+      <a href="#about" class="cta-btn" style="display:inline-flex;align-items:center;gap:10px;padding:17px 26px;border-radius:999px;border:1px solid rgba(247,245,241,.42);color:#F7F5F1;font-size:15px;font-weight:600" style-hover="background:rgba(247,245,241,.1);color:#F7F5F1">○○ってどんなチーム？</a>
     </div>
-    <p style="margin-top:clamp(30px,4vw,48px);font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(11px,1.3vw,14px);letter-spacing:.34em;color:rgba(247,245,241,.58)">PLAY BALL, SHIOGAMA.</p>
+    <p class="hero-in" style="margin-top:clamp(30px,4vw,48px);font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(11px,1.3vw,14px);letter-spacing:.34em;color:rgba(247,245,241,.58);animation-delay:.48s">PLAY BALL, SHIOGAMA.</p>
   </div>
 
   <div style="position:absolute;right:clamp(16px,4vw,44px);bottom:clamp(52px,7vw,88px);display:flex;flex-direction:column;align-items:center;gap:10px">
@@ -320,7 +393,7 @@ img{display:block;max-width:100%}
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,176px),1fr));gap:clamp(8px,1vw,14px)">
       <sc-for list="{{ gallery }}" as="p" hint-placeholder-count="8">
-        <div data-reveal="" style="position:relative;aspect-ratio:1/1;background:repeating-linear-gradient(128deg,#22475c 0 8px,#2a5266 8px 16px);overflow:hidden" style-hover="outline:1px solid rgba(127,196,184,.7)">
+        <div data-reveal="" class="gallery-tile" style="position:relative;aspect-ratio:1/1;background:repeating-linear-gradient(128deg,#22475c 0 8px,#2a5266 8px 16px);overflow:hidden" style-hover="outline:1px solid rgba(127,196,184,.7)">
           <span style="position:absolute;left:10px;bottom:10px;font-family:ui-monospace,Menlo,monospace;font-size:10px;color:rgba(247,245,241,.86);background:rgba(7,24,36,.68);padding:4px 7px">{{ p.label }}</span>
         </div>
       </sc-for>
@@ -384,8 +457,8 @@ img{display:block;max-width:100%}
           <li style="display:flex;gap:16px"><span style="font-family:'Archivo Narrow','Archivo',sans-serif;font-size:24px;font-weight:700;color:#E2703A;line-height:1.1">03</span><span><b style="display:block;font-size:15px;margin-bottom:6px">子どもが「やりたい」と言ったら</b><span style="font-size:13.5px;line-height:1.9;color:rgba(247,245,241,.82)">入団手続きをご案内します。急かすことはありません。</span></span></li>
         </ol>
         <div style="display:grid;gap:10px">
-          <a href="#cta" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:17px;border-radius:999px;background:#E2703A;color:#fff;font-size:15px;font-weight:700" style-hover="background:#C85E2C">見学・体験を相談する<span style="font-family:'Archivo',sans-serif">→</span></a>
-          <a href="#cta" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;border-radius:999px;border:1px solid rgba(247,245,241,.4);color:#F7F5F1;font-size:14.5px;font-weight:600" style-hover="background:rgba(247,245,241,.1);color:#F7F5F1">費用・活動場所について聞く</a>
+          <a href="#cta" class="cta-btn" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:17px;border-radius:999px;background:#E2703A;color:#fff;font-size:15px;font-weight:700" style-hover="background:#C85E2C">見学・体験を相談する<span style="font-family:'Archivo',sans-serif">→</span></a>
+          <a href="#cta" class="cta-btn" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:16px;border-radius:999px;border:1px solid rgba(247,245,241,.4);color:#F7F5F1;font-size:14.5px;font-weight:600" style-hover="background:rgba(247,245,241,.1);color:#F7F5F1">費用・活動場所について聞く</a>
         </div>
       </div>
     </div>
@@ -430,8 +503,8 @@ img{display:block;max-width:100%}
     <h2 data-reveal="" style="font-weight:900;font-size:clamp(28px,4.6vw,54px);line-height:1.35;margin-bottom:22px">まずは、<br />体験してみよう。</h2>
     <p data-reveal="" style="font-size:15.5px;line-height:2.1;color:rgba(247,245,241,.88);max-width:30em;margin:0 auto clamp(30px,4vw,44px)">「うちの子にできるかな」と思ったら、見に来るだけでも大丈夫です。体験・見学は随時受付。お問い合わせフォームからお気軽にご連絡ください。</p>
     <div data-reveal="" style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center">
-      <a href="#cta" style="display:inline-flex;align-items:center;gap:10px;padding:18px 32px;border-radius:999px;background:#E2703A;color:#fff;font-size:15.5px;font-weight:700;box-shadow:0 14px 36px rgba(226,112,58,.34)" style-hover="background:#C85E2C">お問い合わせフォーム<span style="font-family:'Archivo',sans-serif">→</span></a>
-      <a href="#schedule" style="display:inline-flex;align-items:center;gap:10px;padding:18px 28px;border-radius:999px;border:1px solid rgba(247,245,241,.42);color:#F7F5F1;font-size:15.5px;font-weight:600" style-hover="background:rgba(247,245,241,.1);color:#F7F5F1">活動予定を見る</a>
+      <a href="#cta" class="cta-btn" style="display:inline-flex;align-items:center;gap:10px;padding:18px 32px;border-radius:999px;background:#E2703A;color:#fff;font-size:15.5px;font-weight:700;box-shadow:0 14px 36px rgba(226,112,58,.34)" style-hover="background:#C85E2C">お問い合わせフォーム<span style="font-family:'Archivo',sans-serif">→</span></a>
+      <a href="#schedule" class="cta-btn" style="display:inline-flex;align-items:center;gap:10px;padding:18px 28px;border-radius:999px;border:1px solid rgba(247,245,241,.42);color:#F7F5F1;font-size:15.5px;font-weight:600" style-hover="background:rgba(247,245,241,.1);color:#F7F5F1">活動予定を見る</a>
     </div>
   </div>
 </section>
@@ -488,7 +561,7 @@ img{display:block;max-width:100%}
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;showFixedCta&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;UX&quot;},&quot;faqAllOpen&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;UX&quot;},&quot;revealAnimations&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;UX&quot;}}">
 class Component extends DCLogic {
-  state = { open: 0 };
+  state = { open: 0, menuOpen: false };
 
   heroImgRef = React.createRef();
   barRef = React.createRef();
@@ -553,10 +626,29 @@ class Component extends DCLogic {
     };
     window.addEventListener("scroll", this.onScroll, { passive: true });
     this.onScroll();
+
+    this.onKeyDown = (e) => {
+      if (e.key === "Escape" && this.state.menuOpen) this.setState({ menuOpen: false });
+    };
+    window.addEventListener("keydown", this.onKeyDown);
+
+    const preloader = document.getElementById("dc-preloader");
+    if (preloader) {
+      requestAnimationFrame(() => {
+        preloader.classList.add("is-hidden");
+        setTimeout(() => preloader.remove(), 700);
+      });
+    }
+  }
+
+  componentDidUpdate() {
+    document.documentElement.style.overflow = this.state.menuOpen ? "hidden" : "";
   }
 
   componentWillUnmount() {
     window.removeEventListener("scroll", this.onScroll);
+    window.removeEventListener("keydown", this.onKeyDown);
+    document.documentElement.style.overflow = "";
     if (this.io) this.io.disconnect();
   }
 
@@ -586,6 +678,11 @@ class Component extends DCLogic {
       heroImgRef: this.heroImgRef,
       barRef: this.barRef,
       fixedCta: this.props.showFixedCta !== false,
+      menuOpen: this.state.menuOpen,
+      menuButtonClass: this.state.menuOpen ? "hamburger-btn is-open" : "hamburger-btn",
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      closeMenu: () => this.setState({ menuOpen: false }),
+      stopClick: (e) => e.stopPropagation(),
       members: this.members,
       games: this.games,
       schedule: this.schedule,
